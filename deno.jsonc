@@ -1,0 +1,30 @@
+{
+  "tasks": {
+    "format": "deno fmt",
+    "lint": "deno lint",
+    "npm:add": "deno run -A https://esm.sh/v98 add",
+    "npm:update": "deno run -A https://esm.sh/v98 update",
+    "npm:remove": "deno run -A https://esm.sh/v98 remove",
+    "run": "deno run --allow-net --allow-read src/index.ts",
+    "test": "deno test --fail-fast"
+  },
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true
+  },
+  "importMap": "import_map.json",
+  "lint": {
+    "files": {
+      "include": ["src/"]
+    },
+    "rules": {
+      "tags": ["recommended"]
+    }
+  },
+  "fmt": {
+    "files": {
+      "include": ["src/", ".vscode/settings.json", "deno.jsonc"]
+    }
+  }
+}
