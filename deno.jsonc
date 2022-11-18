@@ -5,7 +5,7 @@
     "npm:add": "deno run -A https://esm.sh/v98 add",
     "npm:update": "deno run -A https://esm.sh/v98 update",
     "npm:remove": "deno run -A https://esm.sh/v98 remove",
-    "run": "deno run --allow-net --allow-read src/index.ts",
+    "run": "deno run --allow-net --allow-read src/mod.ts",
     "test": "deno test --fail-fast"
   },
   "compilerOptions": {
