@@ -1,9 +1,9 @@
-# deno-simple-server　🦕
+# deno-simple-server 🦕
 
 ## Use
 
 ```shell
-deno run \                                            
+deno run \
 > --allow-net --allow-read \
 > --import-map=https://raw.githubusercontent.com/mojahige/deno-simple-server/master/import_map.json \
 > https://raw.githubusercontent.com/mojahige/deno-simple-server/master/src/mod.ts \
