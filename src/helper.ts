@@ -1,4 +1,4 @@
-import { parse } from "flags/mod.ts";
+import { parse } from "./deps.ts";
 import {
   DEFAULT_PORT,
   DEFAULT_ROOT,

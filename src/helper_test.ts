@@ -1,5 +1,4 @@
-import { assertObjectMatch } from "testing/asserts.ts";
-import sinon from "sinon";
+import { assertObjectMatch, sinon } from "./deps.ts";
 import { getUseArgumentKey, getUseArguments } from "./helper.ts";
 import { DEFAULT_PORT, DEFAULT_ROOT } from "./constants.ts";
 

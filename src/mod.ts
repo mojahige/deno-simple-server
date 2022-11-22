@@ -1,5 +1,4 @@
-import { serve } from "http/server.ts";
-import { serveDir } from "http/file_server.ts";
+import { serve, serveDir } from "./deps.ts";
 import { getUseArguments } from "./helper.ts";
 
 const { root, port } = getUseArguments();
