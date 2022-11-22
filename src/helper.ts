@@ -39,7 +39,7 @@ export function validResult(test: Result): test is ValidResult {
 
 export function getUseArguments(): UseArguments {
   const { args } = Deno;
-  const parsedArguments = parse(Deno.args);
+  const parsedArguments = parse(args);
   const root = getUseArgumentKey({ args, keys: ROOT_ARGUMENTS });
   const port = getUseArgumentKey({ args, keys: PORT_ARGUMENTS });
   const result = { root: DEFAULT_ROOT, port: DEFAULT_PORT };
