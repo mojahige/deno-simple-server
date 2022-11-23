@@ -7,7 +7,6 @@
 ```shell
 deno run \
 > --allow-net --allow-read \
-> --import-map=https://raw.githubusercontent.com/mojahige/deno-simple-server/master/import_map.json \
 > https://raw.githubusercontent.com/mojahige/deno-simple-server/master/src/mod.ts \
 > -p 1234 \
 > -r ./example
