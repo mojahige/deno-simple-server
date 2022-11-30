@@ -2,6 +2,8 @@
 
 🧪WIP
 
+You can start a server as easily as `php -S localhost:3000` or `python -m http.server 8000` 🛸
+
 ## Use
 
 ```shell
