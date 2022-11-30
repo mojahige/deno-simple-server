@@ -6,51 +6,69 @@ import {
   ROOT_ARGUMENTS,
 } from "./constants.ts";
 
-type Arguments = ReadonlyArray<string>;
-type Keys = ReadonlyArray<string>;
-type Result = {
-  key: string | undefined;
-  valid: boolean;
-};
-type ValidResult = {
-  key: string;
-  valid: true;
-};
-type UseArguments = {
-  root: string;
-  port: number;
-};
+export function generateArgumentKeys(
+  { denoArguments, availableKeys }: {
+    denoArguments: typeof Deno.args;
+    availableKeys: ReadonlyArray<string>;
+  },
+) {
+  const keySet = new Set(
+    denoArguments.filter((argument) =>
+      availableKeys.some((key) => key === argument)
+    ),
+  );
 
-export function getUseArgumentKey({ args, keys }: {
-  args: Arguments;
-  keys: Keys;
-}): Result {
-  const index = args.findLastIndex((arg) => keys.some((key) => arg === key));
+  // If there are multiple arguments of the same type, use `reverse()` to apply the most recent one.
+  return Array.from(keySet).map((key) => key.replaceAll("-", "")).reverse();
+}
+
+export function findArgumentValue<T>({
+  parsedArgs,
+  keys,
+  defaultValue,
+}: {
+  parsedArgs: ReturnType<typeof parse>;
+  keys: ReadonlyArray<string>;
+  defaultValue: T;
+}) {
+  let value = defaultValue;
+
+  for (const key of keys) {
+    const find = parsedArgs[key];
+
+    if (find) {
+      value = find;
+      break;
+    }
+  }
+
+  return value;
+}
+
+export function getUseArguments() {
+  const { args: denoArguments } = Deno;
+  const parsedArgs = parse(denoArguments);
+  const rootKeys = generateArgumentKeys({
+    denoArguments,
+    availableKeys: ROOT_ARGUMENTS,
+  });
+  const portKeys = generateArgumentKeys({
+    denoArguments,
+    availableKeys: PORT_ARGUMENTS,
+  });
+  const root = findArgumentValue({
+    parsedArgs,
+    keys: rootKeys,
+    defaultValue: DEFAULT_ROOT,
+  });
+  const port = findArgumentValue({
+    parsedArgs,
+    keys: portKeys,
+    defaultValue: DEFAULT_PORT,
+  });
 
   return {
-    key: args[index]?.replaceAll("-", ""),
-    valid: index >= 0,
+    root,
+    port,
   };
-}
-
-export function validResult(test: Result): test is ValidResult {
-  return test.valid;
-}
-
-export function getUseArguments(): UseArguments {
-  const { args } = Deno;
-  const parsedArguments = parse(args);
-  const root = getUseArgumentKey({ args, keys: ROOT_ARGUMENTS });
-  const port = getUseArgumentKey({ args, keys: PORT_ARGUMENTS });
-  const result = { root: DEFAULT_ROOT, port: DEFAULT_PORT };
-
-  if (validResult(root)) {
-    result.root = parsedArguments[root.key];
-  }
-
-  if (validResult(port)) {
-    result.port = parsedArguments[port.key];
-  }
-
-  return result;
 }
