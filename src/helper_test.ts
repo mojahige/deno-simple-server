@@ -1,116 +1,92 @@
-import { assertObjectMatch, sinon } from "./deps.ts";
-import { getUseArgumentKey, getUseArguments } from "./helper.ts";
-import { DEFAULT_PORT, DEFAULT_ROOT } from "./constants.ts";
+import { findArgumentValue, generateArgumentKeys } from "./helper.ts";
+import { asserts, parse } from "./deps.ts";
 
-Deno.test("getUseArgumentKey", () => {
-  const target = [
-    "--root",
-    "-p",
-    "3000",
-    "--port",
-    "3001",
-    "-p",
-    "1234",
-  ];
+const { assertEquals } = asserts;
 
-  assertObjectMatch(
-    getUseArgumentKey({
-      args: target,
-      keys: ["-p", "--port"],
-    }),
-    {
-      key: "p",
-      valid: true,
-    },
+Deno.test("generateArgumentKeys", () => {
+  assertEquals(
+    generateArgumentKeys(
+      {
+        denoArguments: ["-r", "--root", "--foo"],
+        availableKeys: ["-r", "--root"],
+      },
+    ),
+    ["root", "r"],
   );
 
-  assertObjectMatch(
-    getUseArgumentKey({
-      args: target,
-      keys: ["-r", "--root"],
-    }),
-    {
-      key: "root",
-      valid: true,
-    },
+  assertEquals(
+    generateArgumentKeys(
+      {
+        denoArguments: ["-r", "1234", "--root", "3000"],
+        availableKeys: ["-r", "--root"],
+      },
+    ),
+    ["root", "r"],
   );
 
-  assertObjectMatch(
-    getUseArgumentKey({
-      args: target,
-      keys: ["--foo", "--bar"],
-    }),
-    {
-      key: undefined,
-      valid: false,
-    },
+  assertEquals(
+    generateArgumentKeys(
+      {
+        denoArguments: ["-r", "1234", "--root", "3000"],
+        availableKeys: ["--root", "-r"],
+      },
+    ),
+    ["root", "r"],
+  );
+
+  assertEquals(
+    generateArgumentKeys(
+      {
+        denoArguments: ["-r", "1234", "--root", "3000"],
+        availableKeys: ["-r"],
+      },
+    ),
+    ["r"],
   );
 });
 
-Deno.test("getUseArguments", () => {
-  const denoArgsStub = sinon.stub(Deno, "args").value([
-    "-p",
-    "3000",
-  ]);
+Deno.test("findArgumentValue", () => {
+  assertEquals(
+    findArgumentValue(
+      {
+        parsedArgs: parse(["-p", "1234", "--port", "3000"]),
+        keys: ["p", "port"],
+        defaultValue: 8080,
+      },
+    ),
+    1234,
+  );
 
-  assertObjectMatch(getUseArguments(), {
-    root: DEFAULT_ROOT,
-    port: 3000,
-  });
+  assertEquals(
+    findArgumentValue(
+      {
+        parsedArgs: parse(["-p", "1234", "--port", "3000"]),
+        keys: ["port", "p"],
+        defaultValue: 8080,
+      },
+    ),
+    3000,
+  );
 
-  denoArgsStub.value([
-    "--port",
-    "1234",
-  ]);
+  assertEquals(
+    findArgumentValue(
+      {
+        parsedArgs: parse(["-p", "1234", "--port", "3000", "-p", "5173"]),
+        keys: ["p", "port"],
+        defaultValue: 8080,
+      },
+    ),
+    5173,
+  );
 
-  assertObjectMatch(getUseArguments(), {
-    root: DEFAULT_ROOT,
-    port: 1234,
-  });
-
-  denoArgsStub.value([
-    "--port",
-    "1234",
-    "-p",
-    "8000",
-  ]);
-
-  assertObjectMatch(getUseArguments(), {
-    root: DEFAULT_ROOT,
-    port: 8000,
-  });
-
-  denoArgsStub.value([
-    "-r",
-    "./root",
-  ]);
-
-  assertObjectMatch(getUseArguments(), {
-    root: "./root",
-    port: DEFAULT_PORT,
-  });
-
-  denoArgsStub.value([
-    "--root",
-    "./root",
-  ]);
-
-  assertObjectMatch(getUseArguments(), {
-    root: "./root",
-    port: DEFAULT_PORT,
-  });
-
-  denoArgsStub.value([
-    "--root",
-    "./root",
-    "-r",
-    "./root/sub",
-  ]);
-
-  assertObjectMatch(getUseArguments(), {
-    root: "./root/sub",
-    port: DEFAULT_PORT,
-  });
-
-  denoArgsStub.restore();
+  assertEquals(
+    findArgumentValue(
+      {
+        parsedArgs: parse(["-p", "1234", "--port", "3000", "-p", "5173"]),
+        keys: ["foo"],
+        defaultValue: 8080,
+      },
+    ),
+    8080,
+  );
 });
