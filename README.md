@@ -9,7 +9,7 @@ You can start a server as easily as `php -S localhost:3000` or `python -m http.s
 ```shell
 deno run \
 > --allow-net --allow-read \
-> https://raw.githubusercontent.com/mojahige/deno-simple-server/master/src/mod.ts \
+> https://raw.githubusercontent.com/mojahige/deno-simple-server/main/src/mod.ts \
 > -p 1234 \
 > -r ./example
 ```
